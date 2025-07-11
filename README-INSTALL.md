@@ -112,7 +112,7 @@ metadata:
 spec:
   checkInterval: 300  # 5 minutes
   driver: trino
-  endpoint: http://trino-ext.dp.licious.com
+  endpoint: http://trino.company.com
   notify:
     slack:
       enabled: true
