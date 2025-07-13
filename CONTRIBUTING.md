@@ -96,3 +96,5 @@ Write clear PR titles and descriptions
 
 Link to relevant issues if applicable
 
+Follow conventional commit standards - https://www.conventionalcommits.org/en/v1.0.0/
+
