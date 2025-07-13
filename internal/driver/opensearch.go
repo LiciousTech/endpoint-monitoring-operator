@@ -35,9 +35,9 @@ func NewOpenSearchDriver(endpoint string) (Driver, error) {
 	if endpoint == "" {
 		return nil, fmt.Errorf("endpoint cannot be empty")
 	}
-	
+
 	endpoint = strings.TrimSuffix(endpoint, "/")
-	
+
 	return &OpenSearchDriver{
 		endpoint: endpoint,
 		client: &http.Client{
@@ -48,31 +48,31 @@ func NewOpenSearchDriver(endpoint string) (Driver, error) {
 
 func (o *OpenSearchDriver) Check() (*CheckResult, error) {
 	start := time.Now()
-	
+
 	healthURL := o.endpoint + "/_cluster/health"
-	
+
 	resp, err := o.client.Get(healthURL)
 	duration := time.Since(start)
-	
+
 	result := &CheckResult{
 		ResponseTime: duration,
 	}
-	
+
 	if err != nil {
 		result.Success = false
 		result.Error = err
 		result.Message = fmt.Sprintf("OpenSearch check failed: %v", err)
 		return result, nil
 	}
-	
+
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != 200 {
 		result.Success = false
 		result.Message = fmt.Sprintf("OpenSearch check failed (status: %d, response time: %v)", resp.StatusCode, duration)
 		return result, nil
 	}
-	
+
 	var health OpenSearchClusterHealth
 	if err := json.NewDecoder(resp.Body).Decode(&health); err != nil {
 		result.Success = false
@@ -80,26 +80,26 @@ func (o *OpenSearchDriver) Check() (*CheckResult, error) {
 		result.Message = fmt.Sprintf("OpenSearch check failed to parse response: %v", err)
 		return result, nil
 	}
-	
+
 	switch strings.ToLower(health.Status) {
 	case "green":
 		result.Success = true
-		result.Message = fmt.Sprintf("OpenSearch cluster is healthy (status: %s, nodes: %d, active_shards: %d, response time: %v)", 
+		result.Message = fmt.Sprintf("OpenSearch cluster is healthy (status: %s, nodes: %d, active_shards: %d, response time: %v)",
 			health.Status, health.NumberOfNodes, health.ActiveShards, duration)
 	case "yellow":
 		result.Success = false
-		result.Message = fmt.Sprintf("OpenSearch cluster has issues (status: %s, nodes: %d, unassigned_shards: %d, response time: %v)", 
+		result.Message = fmt.Sprintf("OpenSearch cluster has issues (status: %s, nodes: %d, unassigned_shards: %d, response time: %v)",
 			health.Status, health.NumberOfNodes, health.UnassignedShards, duration)
 	case "red":
 		result.Success = false
-		result.Message = fmt.Sprintf("OpenSearch cluster is unhealthy (status: %s, nodes: %d, unassigned_shards: %d, response time: %v)", 
+		result.Message = fmt.Sprintf("OpenSearch cluster is unhealthy (status: %s, nodes: %d, unassigned_shards: %d, response time: %v)",
 			health.Status, health.NumberOfNodes, health.UnassignedShards, duration)
 	default:
 		result.Success = false
-		result.Message = fmt.Sprintf("OpenSearch cluster status unknown (status: %s, response time: %v)", 
+		result.Message = fmt.Sprintf("OpenSearch cluster status unknown (status: %s, response time: %v)",
 			health.Status, duration)
 	}
-	
+
 	return result, nil
 }
 
