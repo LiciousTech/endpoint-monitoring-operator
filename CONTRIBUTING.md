@@ -72,14 +72,6 @@ Add support in NewNotifier() in `pkg/factory/factory.go`
 
 4. No hardcoded secrets/tokens; use Kubernetes SecretRef
 
-## Build & Release
-To build and push a new image:
-
-```sh
-docker buildx build --platform linux/amd64,linux/arm64 -t <dockerhub>/endpoint-monitoring-operator:<tag> --push .
-```
-
-Update the image reference in `dist/install.yaml` before release.
 
 ## Security & Secrets
 
