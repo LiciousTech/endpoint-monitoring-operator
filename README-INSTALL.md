@@ -10,6 +10,8 @@ This manifest sets up everything needed.
 
 # Example usage
 
+You can also refer examples folder in this repo.
+
 ## 1. DNS
 
 Let’s say you want to monitor that your domain name is resolving correctly, you can use the dns driver.
